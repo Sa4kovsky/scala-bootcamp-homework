@@ -1,25 +1,32 @@
+import scala.annotation.tailrec
 
-
-def area(
-    x1: Double,
-    y1: Double,
-    x2: Double,
-    y2: Double,
-    x3: Double,
-    y3: Double
-): Double = {
-  val lengthP1P2: Double =
-    Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
-  val lengthP2P3: Double =
-    Math.sqrt(Math.pow(x2 - x3, 2) + Math.pow(y2 - y3, 2))
-  val lengthP1P3: Double =
-    Math.sqrt(Math.pow(x1 - x3, 2) + Math.pow(y1 - y3, 2))
-  val semiperimeter: Double = (lengthP1P2 + lengthP2P3 + lengthP1P3) / 2
-
-  Math.sqrt(
-    semiperimeter * (semiperimeter - lengthP1P2) * (semiperimeter - lengthP2P3) * (semiperimeter - lengthP1P3)
-  )
+def applyNTimesForInts(f: Int => Int, n: Int): Int => Int = { x: Int =>
+  n match {
+    case 0 => x
+    case _ => applyNTimesForInts(f, n - 1)(f(x))
+  }
 }
 
-area(1, 1, 2, 2, 1, 3)
+def applyNTimesForIntsTailrec(f: Int => Int, n: Int): Int => Int = { x: Int =>
+  @tailrec
+  def sum(n: Int, acc: Int): Int =
+    n match {
+      case 0 => acc
+      case _ => sum(n - 1, f(acc))
+    }
+  sum(n, x)
+}
 
+applyNTimesForInts(_ + 1, 4)(3)
+applyNTimesForIntsTailrec(_ + 1, 4)(3)
+
+def applyNTimes[A](f: A => A, n: Int): A => A = { x: A =>
+  n match {
+    case 0 => x
+    case _ => applyNTimesForInts(f, n - 1)(f(x))
+  }
+  println(n)
+  f(x)
+}
+
+applyNTimes((_): Int, 4)(3)
