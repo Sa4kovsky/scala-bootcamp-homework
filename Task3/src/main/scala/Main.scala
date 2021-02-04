@@ -1,6 +1,7 @@
 import Command.Command
+import Convert._
 import Error.ErrorMessage
-import Result.Result
+import Result._
 
 import scala.io.Source
 
@@ -8,37 +9,46 @@ object Main {
 
   def parseCommand(line: String): Either[ErrorMessage, Command] = {
     line.toLowerCase.split("\\s+").toList match {
-      case "divide" :: dividend :: divisor :: Nil  => Right(Command.Divide(dividend.toDouble, divisor.toDouble))
-      case "divide" :: _                           => Left(ErrorMessage("Invalid input"))
-      case "sum" :: t if t.nonEmpty                => Right(Command.Sum(t.map(x => x.toDouble)))
-      case "sum" :: _                              => Left(ErrorMessage("Invalid input"))
-      case "average" :: t if t.nonEmpty            => Right(Command.Average(t.map(x => x.toDouble)))
-      case "average" :: _                          => Left(ErrorMessage("Invalid input"))
-      case "min" :: t if t.nonEmpty                => Right(Command.Min(t.map(x => x.toDouble)))
-      case "min" :: _                              => Left(ErrorMessage("Invalid input"))
-      case "max" :: t if t.nonEmpty                => Right(Command.Max(t.map(x => x.toDouble)))
-      case "max" :: _                              => Left(ErrorMessage("Invalid input"))
-      case _                                       => Left(ErrorMessage("Unrecognized command type"))
+      case "divide" :: dividend :: divisor :: Nil  => Convert.convertDouble(dividend, divisor)
+      case "divide" :: _                           => Left(ErrorMessage("Error: Invalid input"))
+      case "sum" :: array if array.nonEmpty        => Convert.convertListDouble("sum",array)
+      case "sum" :: _                              => Left(ErrorMessage("Error: Invalid input"))
+      case "average" :: array if array.nonEmpty    => Convert.convertListDouble("average",array)
+      case "average" :: _                          => Left(ErrorMessage("Error: Invalid input"))
+      case "min" :: array if array.nonEmpty        => Convert.convertListDouble("min",array)
+      case "min" :: _                              => Left(ErrorMessage("Error: Invalid input"))
+      case "max" :: array if array.nonEmpty        => Convert.convertListDouble("max",array)
+      case "max" :: _                              => Left(ErrorMessage("Error: Invalid input"))
+      case _                                       => Left(ErrorMessage("Error: Unrecognized command type"))
     }
   }
 
-  def calculate(command: Command): Either[ErrorMessage, Result] = ???
-
-  def calculate(command: Command): String = command match {
-    case Command.Divide(dividend, divisor) => (dividend / divisor).toString
-    case Command.Sum(numbers)              => (numbers.sum).toString
-    case Command.Average(numbers)          => (numbers.sum / numbers.length).toString
-    case Command.Min(numbers)              => (numbers.min).toString
-    case Command.Max(numbers)              => (numbers.max).toString
+  def calculate(command: Command): Either[ErrorMessage, Result] = command match {
+    case Command.Divide(dividend, divisor) => Right(ChangeMe(Command.Divide(dividend, divisor), (dividend / divisor)))
+    case Command.Sum(numbers)              => Right(ChangeMe(Command.Sum(numbers), numbers.sum))
+    case Command.Average(numbers)          => Right(ChangeMe(Command.Average(numbers),(numbers.sum / numbers.length)))
+    case Command.Min(numbers)              => Right(ChangeMe(Command.Min(numbers), numbers.min))
+    case Command.Max(numbers)              => Right(ChangeMe(Command.Max(numbers), numbers.max))
   }
 
-  def renderResult(x: Result): String = {
-    ??? // implement this method
+  def renderResult(result: Result): String = result match {
+    case ChangeMe(Command.Divide(dividend, divisor), result)  => s"${dividend} divided by ${divisor} is $result"
+    case ChangeMe(Command.Sum(numbers), result)               => s"the sum of ${numbers.mkString(" ")} is $result"
+    case ChangeMe(Command.Average(numbers), result)           => s"the average of ${numbers.mkString(" ")} is $result"
+    case ChangeMe(Command.Max(numbers), result)               => s"the maximum of ${numbers.mkString(" ")} is $result"
+    case ChangeMe(Command.Min(numbers), result)               => s"the minimum of ${numbers.mkString(" ")} is $result"
   }
 
   def process(line: String): String = {
-    parseCommand(line)
-    ???
+    val process = for {
+      parse <- parseCommand(line)
+      calc <- calculate(parse)
+    } yield renderResult(calc)
+
+    process match {
+      case Left(error) => error.value
+      case Right(value) => value
+    }
   }
 
   def main(args: Array[String]): Unit  = Source.stdin.getLines() map process foreach println
