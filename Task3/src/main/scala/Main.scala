@@ -9,24 +9,24 @@ object Main {
 
   def parseCommand(line: String): Either[ErrorMessage, Command] = {
     line.toLowerCase.split("\\s+").toList match {
-      case "divide" :: dividend :: divisor :: Nil  => Convert.convertDouble(dividend, divisor)
-      case "divide" :: _                           => Left(ErrorMessage("Error: Invalid input"))
-      case "sum" :: array if array.nonEmpty        => Convert.convertListDouble("sum",array)
-      case "sum" :: _                              => Left(ErrorMessage("Error: Invalid input"))
-      case "average" :: array if array.nonEmpty    => Convert.convertListDouble("average",array)
-      case "average" :: _                          => Left(ErrorMessage("Error: Invalid input"))
-      case "min" :: array if array.nonEmpty        => Convert.convertListDouble("min",array)
-      case "min" :: _                              => Left(ErrorMessage("Error: Invalid input"))
-      case "max" :: array if array.nonEmpty        => Convert.convertListDouble("max",array)
-      case "max" :: _                              => Left(ErrorMessage("Error: Invalid input"))
-      case _                                       => Left(ErrorMessage("Error: Unrecognized command type"))
+      case "divide" :: Nil                        => Left(ErrorMessage.NotCorrectInputNumber)
+      case "divide" :: dividend :: divisor :: Nil => Convert.convertDouble(dividend, divisor)
+      case "sum" :: Nil                           => Left(ErrorMessage.NotCorrectInputNumber)
+      case "sum" :: tail                          => Convert.convertListDouble("sum",tail)
+      case "average" :: Nil                       => Left(ErrorMessage.NotCorrectInputNumber)
+      case "average" :: tail                      => Convert.convertListDouble("average",tail)
+      case "min" :: Nil                           => Left(ErrorMessage.NotCorrectInputNumber)
+      case "min" :: tail                          => Convert.convertListDouble("min",tail)
+      case "max" :: Nil                           => Left(ErrorMessage.NotCorrectInputNumber)
+      case "max" :: tail                          => Convert.convertListDouble("max",tail)
+      case _                                      => Left(ErrorMessage.UnrecognizedCommand)
     }
   }
 
   def calculate(command: Command): Either[ErrorMessage, Result] = command match {
-    case Command.Divide(dividend, divisor) => Right(ChangeMe(Command.Divide(dividend, divisor), (dividend / divisor)))
+    case Command.Divide(dividend, divisor) => Right(ChangeMe(Command.Divide(dividend, divisor), dividend / divisor))
     case Command.Sum(numbers)              => Right(ChangeMe(Command.Sum(numbers), numbers.sum))
-    case Command.Average(numbers)          => Right(ChangeMe(Command.Average(numbers),(numbers.sum / numbers.length)))
+    case Command.Average(numbers)          => Right(ChangeMe(Command.Average(numbers), numbers.sum / numbers.length))
     case Command.Min(numbers)              => Right(ChangeMe(Command.Min(numbers), numbers.min))
     case Command.Max(numbers)              => Right(ChangeMe(Command.Max(numbers), numbers.max))
   }
@@ -46,7 +46,7 @@ object Main {
     } yield renderResult(calc)
 
     process match {
-      case Left(error) => error.value
+      case Left(error) => error.message
       case Right(value) => value
     }
   }

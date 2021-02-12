@@ -5,7 +5,7 @@ object DataStructures {
   def allEqual[T](list: List[T]): Boolean = {
     val l = for{
       y <- list.tail
-    }yield if(list.head.equals(y)) true else false
+    }yield if(list.head == y) true else false
     l.foldLeft(true)(_ && _)
   }
 

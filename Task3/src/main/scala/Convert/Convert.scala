@@ -6,14 +6,16 @@ import Error.ErrorMessage
 import scala.util.Try
 
 object Convert {
+
   def isDouble(aString: String): Boolean = Try(aString.toDouble).isSuccess
+
   def convertDouble(dividend:String, divisor:String): Either[ErrorMessage, Command] = {
     if(isDouble(dividend) && isDouble(divisor)){
-      Right(Command.Divide(dividend.toDouble, divisor.toDouble))
+
+      if(divisor.toDouble != 0) Right(Command.Divide(dividend.toDouble, divisor.toDouble))
+      else Left(ErrorMessage.NotCorrectInputNumber)
     }
-    else{
-      Left(ErrorMessage("Error: Invalid input"))
-    }
+    else Left(ErrorMessage.NotCorrectNumberFormat)
   }
 
   def convertListDouble(command: String, numbers: List[String]): Either[ErrorMessage, Command] = {
@@ -26,7 +28,7 @@ object Convert {
       }
     }
     else{
-      Left(ErrorMessage("Error: Invalid input"))
+      Left(ErrorMessage.NotCorrectNumberFormat)
     }
   }
 }

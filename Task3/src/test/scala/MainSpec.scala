@@ -26,23 +26,35 @@ class MainSpec extends AnyFlatSpec {
     process("max 4 -3 -17") shouldEqual "the maximum of 4.0 -3.0 -17.0 is 4.0"
   }
 
-  "error" should "give divide 4 5 5 output 'Error: Invalid input' " in {
-    process("divide 4 5 5") shouldEqual "Error: Invalid input"
+  "error" should "give divide 4 5 5 output 'Error: Unrecognized command type' " in {
+    process("divide 4 5 5") shouldEqual "Error: Unrecognized command type"
   }
 
-  "error" should "give divide 4 5,2 5 output 'Error: Invalid input' " in {
-    process("divide 4 5,2 5") shouldEqual "Error: Invalid input"
+  "error" should "give divide 4 0 output 'Error: Not the correct input number' " in {
+    process("divide 4 0") shouldEqual "Error: Not the correct input number"
   }
 
-  "error" should "give divide 4r 5  output 'Error: Invalid input' " in {
-    process("divide 4r 5") shouldEqual "Error: Invalid input"
+  "error" should "give divide 4 5,2 5 output 'Error: Unrecognized command type' " in {
+    process("divide 4 5,2 5") shouldEqual "Error: Unrecognized command type"
   }
 
-  "error" should "give divide output 'Error: Invalid input' " in {
-    process("divide") shouldEqual "Error: Invalid input"
+  "error" should "give divide 4r 5  output 'Error: Not the correct format' " in {
+    process("divide 4r 5") shouldEqual "Error: Not the correct format"
   }
 
   "error" should "give 21312 output 'Error: Unrecognized command type' " in {
     process("21312") shouldEqual "Error: Unrecognized command type"
+  }
+
+  "error" should "give divide output 'Error: Not the correct input number' " in {
+    process("divide") shouldEqual "Error: Not the correct input number"
+  }
+
+  "error" should "give '' output 'Error: Unrecognized command type' " in {
+    process("") shouldEqual "Error: Unrecognized command type"
+  }
+
+  "error" should "give sum 5  output 'the sum of 5' " in {
+    process("sum 5") shouldEqual "the sum of 5.0 is 5.0"
   }
 }
