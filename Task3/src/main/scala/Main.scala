@@ -24,6 +24,7 @@ object Main {
   }
 
   def calculate(command: Command): Either[ErrorMessage, Result] = command match {
+    case Command.Divide(dividend, 0)       => Left(ErrorMessage.NotCorrectInputNumber)
     case Command.Divide(dividend, divisor) => Right(ChangeMe(Command.Divide(dividend, divisor), dividend / divisor))
     case Command.Sum(numbers)              => Right(ChangeMe(Command.Sum(numbers), numbers.sum))
     case Command.Average(numbers)          => Right(ChangeMe(Command.Average(numbers), numbers.sum / numbers.length))

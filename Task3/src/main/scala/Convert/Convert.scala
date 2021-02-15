@@ -11,9 +11,7 @@ object Convert {
 
   def convertDouble(dividend:String, divisor:String): Either[ErrorMessage, Command] = {
     if(isDouble(dividend) && isDouble(divisor)){
-
-      if(divisor.toDouble != 0) Right(Command.Divide(dividend.toDouble, divisor.toDouble))
-      else Left(ErrorMessage.NotCorrectInputNumber)
+      Right(Command.Divide(dividend.toDouble, divisor.toDouble))
     }
     else Left(ErrorMessage.NotCorrectNumberFormat)
   }
@@ -21,10 +19,10 @@ object Convert {
   def convertListDouble(command: String, numbers: List[String]): Either[ErrorMessage, Command] = {
     if(numbers.map(x => isDouble(x)).foldLeft(true)(_ && _)){
       command match {
-        case "sum" => Right(Command.Sum(numbers.map(x => x.toDouble)))
+        case "sum"     => Right(Command.Sum(numbers.map(x => x.toDouble)))
         case "average" => Right(Command.Average(numbers.map(x => x.toDouble)))
-        case "min" => Right(Command.Min(numbers.map(x => x.toDouble)))
-        case "max" => Right(Command.Max(numbers.map(x => x.toDouble)))
+        case "min"     => Right(Command.Min(numbers.map(x => x.toDouble)))
+        case "max"     => Right(Command.Max(numbers.map(x => x.toDouble)))
       }
     }
     else{
