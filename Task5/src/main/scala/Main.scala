@@ -83,19 +83,8 @@ object Main {
 
   sealed trait Hand
   object Hand {
-    final case class OmahaHand(cards: List[Card]) extends Hand {
-      def apply(cards: List[Card]): Either[ErrorMessage, OmahaHand] = {
-        if(cards.length == 4) Right(OmahaHand(cards))
-        else Left(InvalidHandSize)
-      }
-    }
-
-    final case class TexasHand(cards: List[Card]) extends Hand {
-      def apply(cards: List[Card]): Either[ErrorMessage, TexasHand] = {
-        if(cards.length == 2) Right(TexasHand(cards))
-        else Left(InvalidHandSize)
-      }
-    }
+    final case class OmahaHand(cards: (Card, Card, Card, Card) ) extends Hand
+    final case class TexasHand(cards: (Card, Card) ) extends Hand
   }
 
   sealed abstract class ErrorMessage(details: String) { def message: String = s"Error: $details" }
