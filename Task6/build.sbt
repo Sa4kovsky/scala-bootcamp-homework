@@ -8,6 +8,8 @@ version := "0.1"
 
 scalaVersion := "2.13.4"
 
+organization := "org.example"
+
 sbtPlugin := true
 
 
