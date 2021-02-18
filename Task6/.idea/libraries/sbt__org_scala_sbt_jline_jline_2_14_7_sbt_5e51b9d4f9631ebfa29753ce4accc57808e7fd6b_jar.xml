@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="sbt: org.scala-sbt.jline:jline:2.14.7-sbt-5e51b9d4f9631ebfa29753ce4accc57808e7fd6b:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline/jline/2.14.7-sbt-5e51b9d4f9631ebfa29753ce4accc57808e7fd6b/jline-2.14.7-sbt-5e51b9d4f9631ebfa29753ce4accc57808e7fd6b.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline/jline/2.14.7-sbt-5e51b9d4f9631ebfa29753ce4accc57808e7fd6b/jline-2.14.7-sbt-5e51b9d4f9631ebfa29753ce4accc57808e7fd6b-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline/jline/2.14.7-sbt-5e51b9d4f9631ebfa29753ce4accc57808e7fd6b/jline-2.14.7-sbt-5e51b9d4f9631ebfa29753ce4accc57808e7fd6b-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

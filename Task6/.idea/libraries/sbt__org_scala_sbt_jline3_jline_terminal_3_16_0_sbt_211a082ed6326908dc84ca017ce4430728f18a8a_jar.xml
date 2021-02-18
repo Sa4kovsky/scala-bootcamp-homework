@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="sbt: org.scala-sbt.jline3:jline-terminal:3.16.0-sbt-211a082ed6326908dc84ca017ce4430728f18a8a:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline3/jline-terminal/3.16.0-sbt-211a082ed6326908dc84ca017ce4430728f18a8a/jline-terminal-3.16.0-sbt-211a082ed6326908dc84ca017ce4430728f18a8a.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline3/jline-terminal/3.16.0-sbt-211a082ed6326908dc84ca017ce4430728f18a8a/jline-terminal-3.16.0-sbt-211a082ed6326908dc84ca017ce4430728f18a8a-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline3/jline-terminal/3.16.0-sbt-211a082ed6326908dc84ca017ce4430728f18a8a/jline-terminal-3.16.0-sbt-211a082ed6326908dc84ca017ce4430728f18a8a-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
