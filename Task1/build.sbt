@@ -12,8 +12,7 @@ libraryDependencies ++= Seq(
 
 lazy val myLibraryinGit = RootProject(
   uri(
-    "http://github.com/ground5hark/sbt-concat.git"
-    "https://github.com/Sa4kovsky/scala-bootcamp-homework.git#0e8dc483cff35205d591109fbbe0c19fe2c40e72"
+    "https://github.com/Sa4kovsky/scala-bootcamp-homework.git#fbac26c9a9c6f9aa2f2d358d228742bb0dbd8a0d"
   )
 )
 
