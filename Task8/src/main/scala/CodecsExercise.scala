@@ -41,22 +41,43 @@ object CodecsExercise {
   // 1. Typeclass itself: trait Contravariant
   // 2. Typeclass Summoner: object Contravariant
   // 3. Typeclass Ops: implicit class ContravariantOps
-  trait Contravariant[F[_]]{
+  trait Conravariant[F[_]]{
     def contrmap[A, B](fa: F[A])(f: B => A): F[B]
   }
 
   object Conravariant{
-    def apply[F[_]: Contravariant]: Contravariant[F] = implicitly[Contravariant[F]]
+    def apply[F[_]: Conravariant]: Conravariant[F] = implicitly[Conravariant[F]]
   }
 
-  implicit class ContravariantOps[F[_]: Contravariant, A](fa: F[A]) {
+  implicit class ConravariantOps[F[_]: Conravariant, A](fa: F[A]) {
     def contrmap[B](f: B => A): F[B] = Conravariant[F].contrmap(fa)(f)
   }
 
-
   // Exercise 9. Implement Contravariant for encoder: implicit val encoderContravariant
-  implicit val encoderContravariant = new Contravariant[Encoder] {
+  implicit val encoderContravariant = new Conravariant[Encoder] {
     override def contrmap[A, B](fa: Encoder[A])(f: B => A): Encoder[B] = t => fa.toJson(f(t))
   }
+
+  // Functions Example
+  val foo1: String => Int = _.length
+  val foo2: Boolean => String = if (_) "100" else "1"
+
+  val fv: Functor[Boolean => *] = new Functor[Boolean => *] {
+    override def fmap[A, B](fa: Boolean => A)(f: A => B): Boolean => B = t => f(fa(t))
+  }
+
+  val cf: Conravariant[* => Int] = new  Conravariant[* => Int] {
+    override def contrmap[A, B](fa: A => Int)(f: B => A): B => Int = t =>  fa(f(t))
+  }
+
+  // Exercise 10. Implement Functor and Contravariant for functions:
+  // implicit def functionFunctor
+  // implicit def functionContravariant
+  implicit def functionFunctor: Functor[Function[Boolean, *]] = fv
+
+  implicit def functionContravariant: Conravariant[Function[*, Int]] = cf
+
+  val foo3: Boolean => Int = functionFunctor.fmap(foo2)(foo1)
+  val foo4: Boolean => Int = functionContravariant.contrmap(foo1)(foo2)
 
 }
