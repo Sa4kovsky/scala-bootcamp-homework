@@ -4,7 +4,7 @@
     <profile name="sbt 1" modules="task8" />
     <profile name="sbt 2" modules="Task8">
       <plugins>
-        <plugin path="C:\Users\sachkovski.ev\AppData\Local\Coursier\cache\v1\https\repo1.maven.org\maven2\org\typelevel\kind-projector_2.13.5\0.11.3\kind-projector_2.13.5-0.11.3.jar" />
+        <plugin path="C:\Users\PC_SACHKOVSKY\AppData\Local\Coursier\cache\v1\https\repo1.maven.org\maven2\org\typelevel\kind-projector_2.13.5\0.11.3\kind-projector_2.13.5-0.11.3.jar" />
       </plugins>
     </profile>
   </component>
