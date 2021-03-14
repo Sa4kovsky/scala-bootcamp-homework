@@ -58,7 +58,7 @@ object QAndAExamples {
     def apply[F[_] : Applicative]: Applicative[F] = implicitly[Applicative[F]]
   }
 
-  implicit class ApplicativeOps[F[_] : Applicative, A](x: F[A]) {
+  implicit class ApplicativeOps[F[_] : Applicative, A](x: A) {
     def pure: F[A] = Applicative[F].pure(x)
   }
 
@@ -98,13 +98,13 @@ object QAndAExamples {
       }
   }
 
-   traverse(List(1, 2, 3)) { i =>
-     Option.when(i % 2 == 1)(i)
-   } == None
+  traverse(List(1, 2, 3)) { i =>
+    Option.when(i % 2 == 1)(i)
+  }.isEmpty
 
-   traverse(List(1, 2, 3)) { i =>
-     Option(Some(i + 1))
-   } == Some(List(2, 3, 4))
+  traverse(List(1, 2, 3)) { i =>
+    Option(i + 1)
+  } == Option(List(2, 3, 4))
 
   // 6. Foldable
   trait Foldable[F[_]] {
@@ -112,7 +112,7 @@ object QAndAExamples {
   }
 
   object Foldable {
-    def apply[T: Foldable]: Foldable[T] = implicitly
+    def apply[T[_]: Foldable]: Foldable[T] = implicitly[Foldable[T]]
   }
 
   implicit class FoldableOps[F[_]: Foldable, A](fa: F[A]) {
@@ -126,8 +126,34 @@ object QAndAExamples {
   }
 
   // 6.3. Implement `traverse` for all Foldables instead of List
-  def traverse[F[_] : Applicative, G[_] : Foldable, A, B](fa: G[A])(f: A => F[B]): F[G[B]] = {
-    ???
+  def traverse[F[_]: Applicative, G[_]: Functor: Foldable, A, B](l: G[A])(f: A => F[B]): F[G[B]] = {
+    l.foldLeft(Applicative[F].pure(???/*G[B]*/)) {
+      case (b: F[G[B]], a: A) => (???/*F[G[B]]*/, f(a): F[B]).mapN {
+        case (b1 /*G[B]*/, b2 /*B*/) => b1.fmap(bb => )
+      }
+    }
   }
+
+  def traverseLO[A, B](l: List[A])(f: A => Option[B]): Option[List[B]] = {
+    l match {
+      case head :: tail => f(head).flatMap(r => traverseLO(tail)(f).map(t => r :: t))
+      case Nil => Some(Nil)
+    }
+  }
+
+  def traverseL[F[_]: Applicative, A, B](l: List[A])(f: A => F[B]): F[List[B]] = {
+    l match {
+      case head :: tail =>
+        (f(head), traverseL(tail)(f)).mapN(_ :: _)
+      case Nil => Applicative[F].pure(Nil)
+    }
+  }
+
+  println(traverseLO(List(1,2,3,4))(x => Some(x)))
+  println(traverseLO(List(1,2,3,4))(x => if (x != 2) Some(x) else None))
+
+
+  println(traverseL(List(1,2,3,4))(x => Some(x).asInstanceOf[Option[Int]]))
+  println(traverseL(List(1,2,3,4))(x => if (x != 2) Some(x) else None))
 
 }
