@@ -64,8 +64,15 @@ object HomeworkSpec {
       Either.catchNonFatal(LocalDate.parse(str, formatter)).leftMap(_.getMessage)
     })
 
-    implicit val teamTotalsDecoder: Decoder[TeamTotals] =
-      Decoder.forProduct3("assists", "full_timeout_remaining", "plusMinus")(TeamTotals.apply)
+    //implicit val teamTotalsDecoder: Decoder[TeamTotals] = Decoder.forProduct3("assists", "full_timeout_remaining", "plusMinus")(TeamTotals.apply)
+    implicit val teamTotalsDecoder: Decoder[TeamTotals] = hcursor => {
+      for {
+        assists <- hcursor.downField("assists").as[String]
+        fullTimeoutRemaining <- hcursor.downField("full_timeout_remaining").as[String]
+        plusMinus <- hcursor.downField("plusMinus").as[String]
+      } yield TeamTotals(assists, fullTimeoutRemaining, plusMinus)
+    }
+
     implicit val teamBoxScoreDecoder: Decoder[TeamBoxScore] = deriveDecoder[TeamBoxScore]
     implicit val gameStatsDecoder: Decoder[GameStats] = deriveDecoder[GameStats]
     implicit val prevMatchupDecoder: Decoder[PrevMatchup] = deriveDecoder[PrevMatchup]
