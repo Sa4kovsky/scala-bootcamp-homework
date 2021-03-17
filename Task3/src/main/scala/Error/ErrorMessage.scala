@@ -6,7 +6,6 @@ object ErrorMessage {
   case object NotCorrectNumberFormat extends ErrorMessage("Not the correct format")
   case object NotCorrectInputNumber extends ErrorMessage("Not the correct input number")
   case object CalculationError extends ErrorMessage("Calculation Error")
-
 }
 
 
