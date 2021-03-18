@@ -38,5 +38,5 @@ object Calculator {
 sealed abstract class ErrorMessage(details: String) { def message: String = s"Error: $details" }
 object ErrorMessage {
   case object ErrorZero extends ErrorMessage("You can't divide by 0")
-  case object CalculationError extends ErrorMessage("Invalid data")
+  case object CalculationError extends ErrorMessage("Input is not correct")
 }
