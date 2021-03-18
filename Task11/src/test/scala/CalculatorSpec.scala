@@ -3,7 +3,7 @@ import org.scalatest.funsuite.AnyFunSuite
 class CalculatorSpec extends AnyFunSuite {
 
 
-  test("print an error if the input is not correct") {
+  test("test - print input is not correct") {
     val testCalc = Calculator()
     assert(Left("Error: Input is not correct") ==  testCalc.calculate(Calculator()))
   }
@@ -75,22 +75,22 @@ class CalculatorSpec extends AnyFunSuite {
 
   test("test - multiplying a number by 0 gives 0") {
     val testCalc = Calculator()
-    assert(Right(0.0) ==  testCalc.calculate(Calculator(2, 0).times))
+    assert(Right(0.0) ==  testCalc.calculate(Calculator(2, 0).multiply))
   }
 
   test("test - multiplying of two positive numbers") {
     val testCalc = Calculator()
-    assert(Right(20.0) ==  testCalc.calculate(Calculator(2, 10).times))
+    assert(Right(20.0) ==  testCalc.calculate(Calculator(2, 10).multiply))
   }
 
   test("test - multiplying positive and negative numbers gives a negative") {
     val testCalc = Calculator()
-    assert(Right(-20.0) ==  testCalc.calculate(Calculator(2, -10).times))
+    assert(Right(-20.0) ==  testCalc.calculate(Calculator(2, -10).multiply))
   }
 
   test("test - multiplying two negative numbers gives a positive") {
     val testCalc = Calculator()
-    assert(Right(20.0) ==  testCalc.calculate(Calculator(-2, -10).times))
+    assert(Right(20.0) ==  testCalc.calculate(Calculator(-2, -10).multiply))
   }
 
 }
