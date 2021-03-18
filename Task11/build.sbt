@@ -11,4 +11,4 @@ libraryDependencies ++= Seq(
   "org.scalatestplus" %% "selenium-2-45" % scalaTestVersion % Test
 )
 
-resolvers += Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksamuel/sbt-plugins/"))
+coverageEnabled := true
