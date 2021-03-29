@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaSbtSettings">
-<<<<<<< HEAD
-=======
     <option name="customVMPath" />
->>>>>>> 1177309302dd6d34c6374b75829a6767f2b9d462
     <option name="linkedExternalProjectsSettings">
       <SbtProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />

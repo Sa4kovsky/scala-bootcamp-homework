@@ -64,8 +64,15 @@ object HomeworkSpec {
       Either.catchNonFatal(LocalDate.parse(str, formatter)).leftMap(_.getMessage)
     })
 
-    implicit val teamTotalsDecoder: Decoder[TeamTotals] =
-      Decoder.forProduct3("assists", "full_timeout_remaining", "plusMinus")(TeamTotals.apply)
+    //implicit val teamTotalsDecoder: Decoder[TeamTotals] = Decoder.forProduct3("assists", "full_timeout_remaining", "plusMinus")(TeamTotals.apply)
+    implicit val teamTotalsDecoder: Decoder[TeamTotals] = hcursor => {
+      for {
+        assists <- hcursor.downField("assists").as[String]
+        fullTimeoutRemaining <- hcursor.downField("full_timeout_remaining").as[String]
+        plusMinus <- hcursor.downField("plusMinus").as[String]
+      } yield TeamTotals(assists, fullTimeoutRemaining, plusMinus)
+    }
+
     implicit val teamBoxScoreDecoder: Decoder[TeamBoxScore] = deriveDecoder[TeamBoxScore]
     implicit val gameStatsDecoder: Decoder[GameStats] = deriveDecoder[GameStats]
     implicit val prevMatchupDecoder: Decoder[PrevMatchup] = deriveDecoder[PrevMatchup]
@@ -82,29 +89,13 @@ object HomeworkSpec {
 
   private def fetchScoreboard(date: LocalDate): Either[circe.Error, Scoreboard] = {
     val dateString = date.format(DateTimeFormatter.BASIC_ISO_DATE)
-    val jsonString = Try {
-      val src = Source.fromResource(s"scoreboard_$dateString.json")
-      val s = src.mkString
-      src.close()
-      s
-    }.getOrElse {
-      val url = s"https://data.nba.net/10s/prod/v1/$dateString/scoreboard.json"
-      Http(url).asString.body
-    }
-    decode[Scoreboard](jsonString)
+    val body = Http(s"https://data.nba.net/10s/prod/v1/$dateString/scoreboard.json").asString.body
+    decode[Scoreboard](body)
   }
 
   private def fetchGameInfo(date: LocalDate, gameId: String): Either[circe.Error, BoxScore] = {
-    val jsonString = Try {
-      val src = Source.fromResource(s"${gameId}_boxscore.json")
-      val s = src.mkString
-      src.close()
-      s
-    }.getOrElse {
-      val dateString = date.format(DateTimeFormatter.BASIC_ISO_DATE)
-      val url = s"https://data.nba.net/10s/prod/v1/$dateString/${gameId}_boxscore.json"
-      Http(url).asString.body
-    }
-    decode[BoxScore](jsonString)
+    val dateString = date.format(DateTimeFormatter.BASIC_ISO_DATE)
+    val body = Http(s"https://data.nba.net/10s/prod/v1/$dateString/${gameId}_boxscore.json").asString.body
+    decode[BoxScore](body)
   }
 }

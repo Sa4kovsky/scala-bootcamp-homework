@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaCompilerConfiguration">
-<<<<<<< HEAD
     <profile name="sbt 1" modules="task11" />
-=======
-    <profile name="sbt 1" modules="Task11,task11" />
->>>>>>> 1177309302dd6d34c6374b75829a6767f2b9d462
   </component>
 </project>
