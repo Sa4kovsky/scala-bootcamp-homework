@@ -1,4 +1,5 @@
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
@@ -48,9 +49,9 @@ object EffectsHomework1 {
 
     def redeemWith[B](recover: Throwable => IO[B], bind: A => IO[B]): IO[B] = Try(run()).toEither.fold(recover, bind)
 
-    def unsafeRunSync(): A = ???
+    def unsafeRunSync(): A = run()
 
-    def unsafeToFuture(): Future[A] = ???
+    def unsafeToFuture(): Future[A] = Future(run())
   }
 
   object IO {
