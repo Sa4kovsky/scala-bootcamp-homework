@@ -39,15 +39,30 @@ object EffectsHomework1 {
 
     def void: IO[Unit] = map(_ => ())
 
-    def attempt: IO[Either[Throwable, A]] = IO(Try(run()).toEither)
+    def attempt: IO[Either[Throwable, A]] = Try(run()) match {
+      case Failure(exception) => IO.pure(Left(exception))
+      case Success(value) => IO.pure(Right(value))
+    }
 
-    def option: IO[Option[A]] = redeem(_ => None, Some(_))
+    def option: IO[Option[A]] = Try(run()) match {
+      case Failure(_) => IO.pure(None)
+      case Success(value) => IO.pure(Some(value))
+    }
 
-    def handleErrorWith[AA >: A](f: Throwable => IO[AA]): IO[AA] = Try(run()).toEither.fold(f, IO.pure)
+    def handleErrorWith[AA >: A](f: Throwable => IO[AA]): IO[AA] = Try(run()) match {
+      case Failure(exception) => f(exception)
+      case Success(value) => IO.pure[AA](value)
+    }
 
-    def redeem[B](recover: Throwable => B, map: A => B): IO[B] =  IO(Try(run()).toEither.fold(recover, map))
+    def redeem[B](recover: Throwable => B, map: A => B): IO[B] = Try(run()) match {
+      case Failure(exception) => IO.pure(recover(exception))
+      case Success(value) => IO.pure(map(value))
+    }
 
-    def redeemWith[B](recover: Throwable => IO[B], bind: A => IO[B]): IO[B] = Try(run()).toEither.fold(recover, bind)
+    def redeemWith[B](recover: Throwable => IO[B], bind: A => IO[B]): IO[B] = Try(run()) match {
+      case Failure(exception) => recover(exception)
+      case Success(value) => bind(value)
+    }
 
     def unsafeRunSync(): A = run()
 
@@ -57,11 +72,11 @@ object EffectsHomework1 {
   object IO {
     def apply[A](body: => A): IO[A] = delay(body)
 
-    def suspend[A](thunk: => IO[A]): IO[A] = ???
+    def suspend[A](thunk: => IO[A]): IO[A] = thunk.unsafeRunSync())
 
     def delay[A](body: => A): IO[A] = new IO(() => body)
 
-    def pure[A](a: A): IO[A] = IO(a)
+    def pure[A](a: A): IO[A] = new IO(() => a)
 
     def fromEither[A](e: Either[Throwable, A]): IO[A] = e match {
       case Right(a) => pure(a)
