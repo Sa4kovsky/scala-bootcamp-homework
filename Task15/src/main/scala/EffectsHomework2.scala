@@ -1,5 +1,7 @@
 
 import cats.effect._
+import cats.effect.concurrent.Ref
+
 import scala.io.StdIn
 import scala.io.Source
 import java.util.concurrent.Executors
@@ -40,13 +42,16 @@ object EffectsHomework2 extends IOApp {
   import Solution._
 
   override def run(args: List[String]): IO[ExitCode] = {
-    val ec = ExecutionContext.fromExecutor(Executors.newCachedThreadPool())
+    val executors = Executors.newCachedThreadPool()
+    val ec = ExecutionContext.fromExecutor(executors)
     val blocker = Blocker.liftExecutionContext(ec)
-    for {
+    (for {
       sourceFile <- readFilePath(blocker)
       seed <- readSeed(blocker)
       word <- process(blocker)(sourceFile)
-    } yield  ExitCode.Success
+      minHash <- minHash(blocker)(word, seed)
+      safe <- IO(Save(minHash, word))
+    } yield(safe)).guarantee(IO(executors.shutdown())) as ExitCode.Success
   }
 }
 
@@ -72,15 +77,26 @@ object Solution {
     } yield seed
   }
 
-  def process(blocker: Blocker)(filePath: Source)(implicit contextShift: ContextShift[IO], sync: Sync[IO]): IO[Unit] =
+  def process(blocker: Blocker)(filePath: Source)(implicit contextShift: ContextShift[IO], sync: Sync[IO]): IO[List[String]] =
     blocker.delay {
       val listText: List[String] = filePath
         .getLines
         .map(_.replaceAll("""[\p{Punct}]""", ""))
         .flatMap(_.split("\\s+"))
+        .filter(_ != "")
         .toList
-      print(listText)
+
+      listText
     }
+
+  def minHash(blocker: Blocker)(word: List[String], seed: Int = 0)(implicit contextShift: ContextShift[IO], sync: Sync[IO]) = {
+    for{
+      javaHash <- blocker.delay(word.map(word => javaHash(word, seed)).min)
+      knuthHash <- blocker.delay(word.map(word => knuthHash(word, seed)).min)
+      min <- blocker.delay(javaHash min knuthHash)
+      _ <- IO(println(s"MinHash: $min"))
+    } yield min
+  }
 
   def javaHash(word: String, seed: Int = 0): Int = {
     var hash = 0
@@ -97,3 +113,5 @@ object Solution {
     hash % constant
   }
 }
+
+case class Save(minHash: Int, list: List[String])
