@@ -53,7 +53,7 @@ object GuessServer extends IOApp {
     case req @ POST -> Root / "start" =>
       Created(for {
         req <- req.as[StartGame]
-        (id, riddle, attempt) = generateNumber(req)
+        (id, riddle) = generateNumber(req)
         _ <- storage.update(_ + (id -> riddle))
         _ <- storage.get.map(x => x)
       } yield id
@@ -70,16 +70,15 @@ object GuessServer extends IOApp {
     } yield resp
   }
 
-  def generateNumber(startGame: StartGame): (String, Int, Int) = {
+  def generateNumber(startGame: StartGame): (String, Int) = {
     val riddle = Random.between(startGame.min,startGame.max)
-    val attempt = 3
-    (UUID.randomUUID.toString, riddle, attempt)
+    (UUID.randomUUID.toString, riddle)
   }
 
   def answer(riddle: Int, guess: Int, attempts: Int): ResultStep = {
-    if (guess == riddle && attempts >= 1) Win
-    else if (attempts == 1) GameOver
-    else if (guess > riddle && attempts != 1) Greater
+    if (guess == riddle && attempts >= 0) Win
+    else if (attempts == 0) GameOver
+    else if (guess > riddle && attempts != 0) Greater
     else Lower
   }
 }
@@ -112,7 +111,7 @@ object HttpClient extends IOApp {
   def guess(id: String, min: Int, max: Int, attempt: Int)(client: Client[IO]): IO[Result] = {
     val x = (min + max) / 2
     val attempts = attempt - 1
-    println(attempt)
+    println(s"attempt:$attempts number:$x")
     client.expect[ResultStep](Method.POST(Guess(id, x, attempts), uri / "guess")).flatMap {
       case Win => println(s"WIN!!! number = $x"); Result(x).pure[IO]
       case GameOver => println(s"Game Over"); Result(x).pure[IO]
