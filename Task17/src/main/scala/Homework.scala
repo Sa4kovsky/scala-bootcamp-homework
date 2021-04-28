@@ -56,6 +56,7 @@ object GuessServer extends IOApp {
         (id, riddle) = generateNumber(req)
         _ <- storage.update(_ + (id -> riddle))
         _ <- storage.get.map(x => x)
+       kl = storage.get.map(x => x.get(id))
       } yield id
       )
 
