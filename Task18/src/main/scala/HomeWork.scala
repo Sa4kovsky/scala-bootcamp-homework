@@ -59,7 +59,7 @@ object WebSocketServer extends IOApp {
     app <- makeRoutes()
     server <- BlazeServerBuilder[IO](global)
       .withHttpApp(app)
-      .bindHttp(port = 9002, host = "localhost")
+      .bindHttp(port = 9003, host = "localhost")
       .serve
       .compile
       .drain
@@ -120,7 +120,7 @@ object WebSocketServer extends IOApp {
 
 object WebSocketClient extends IOApp {
 
-  private val uri = uri"ws://localhost:9002/echo"
+  private val uri = uri"ws://localhost:9003/echo"
 
   private def printLine(string: String = ""): IO[Unit] = IO(println(string))
 
