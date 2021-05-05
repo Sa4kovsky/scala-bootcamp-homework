@@ -23,9 +23,9 @@ object DbQuery {
 
   val updateBook: Fragment = fr"UPDATE books SET"
 
-  val deleteAuthor: Fragment = fr"DELETE FROM authors"
+  val deleteAllAuthor: Fragment = fr"DELETE FROM authors"
 
-  val deleteBook: Fragment = fr"DELETE FROM books"
+  val deleteAllBook: Fragment = fr"DELETE FROM books"
 
   val readAllAuthors = authors
 
@@ -51,6 +51,9 @@ object DbQuery {
   def updateYearOfBook(id: UUID, year: Year) =
     (updateAuthor ++ fr"year = $year where id = $id")
 
+  def deleteBook(id: UUID) =
+    (deleteAllBook ++ fr"WHERE id = $id")
+
   def filterBookOfGenre(genre: String) =
-    (authors ++ fr"WHERE genre  = $genre")
+    (authors ++ fr"INNER JOIN authors ON books.author = authors.id WHERE genre  = $genre")
 }
