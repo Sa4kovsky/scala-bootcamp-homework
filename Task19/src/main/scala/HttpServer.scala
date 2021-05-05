@@ -11,11 +11,12 @@ import doobie._
 import doobie.implicits._
 import doobie.implicits.javatime._
 import doobie.h2._
-import org.http4s.Method.{GET}
+import org.http4s.Method.{GET, POST, DELETE}
 import org.http4s.dsl.io._
 import io.circe.generic.auto._
 import org.http4s.circe.CirceEntityCodec.{circeEntityDecoder, circeEntityEncoder}
 
+import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.ExecutionContext.global
 
@@ -51,17 +52,17 @@ object HttpServer extends IOApp{
     } yield ()
 
   final case class SqlCommon[F[_] : Effect](private val xa: Transactor[F]) {
-    def getOption[A: Read](f: Fragment) = f.query[A].to[List].transact(xa)
+    def getOption[A](f: ConnectionIO[List[A]]) = f.transact(xa)
 
-    def delete(f: Fragment) = f.update.run.transact(xa)
+    def delete(f: ConnectionIO[Int]) = f.transact(xa)
 
-    def insert(f: Fragment) = f.update.run.transact(xa)
+    def insert(f: ConnectionIO[Int]) = f.transact(xa)
 
-    def update(f: Fragment) = f.update.run.transact(xa)
+    def update(f: ConnectionIO[Int]) = f.transact(xa)
   }
 
   def routes(xa: Transactor[IO]): HttpRoutes[IO] = {
-    readDataRoutes(xa) <+> deleteDataRoutes(xa) <+> updateDataRoutes(xa) <+> insertDataRoutes(xa)
+    readDataRoutes(xa) <+> insertDataRoutes(xa) <+> updateDataRoutes(xa) <+> deleteDataRoutes(xa)
   }
 
   implicit val UUIDDecoder: QueryParamDecoder[UUID] = { param =>
@@ -79,7 +80,7 @@ object HttpServer extends IOApp{
       case GET -> Root / "getAllBooks" =>
         for {
           books <- SqlCommon(xa).getOption[Book](readAllBook)
-          response <- Ok(books)
+          response <- Ok("books")
         } yield response
     }
 
@@ -112,7 +113,7 @@ object HttpServer extends IOApp{
     HttpRoutes.of[IO] {
       case req@POST -> Root / "updateAllBook" => for {
         x <- req.as[Book]
-        _ <- SqlCommon(xa).update(updateYearOfBook(x.id, x.year) )
+        _ <- SqlCommon(xa).update(updateYearOfBook(x.id, x.year))
         response <- Ok(s"${x.title} was updated")
       } yield response
 
@@ -143,12 +144,12 @@ object HttpServer extends IOApp{
   def deleteDataRoutes(xa: Transactor[IO]): HttpRoutes[IO] = {
     HttpRoutes.of[IO] {
       case DELETE -> Root / "deleteAllBook" => for {
-       x <- SqlCommon(xa).delete(deleteAllBook)
+       x <- SqlCommon(xa).delete(deleteAllBook.update.run)
        response <- if(x > 0) Ok("All books was deleted") else Ok("Error")
       } yield response
 
       case DELETE -> Root / "deleteAllAuthor" => for {
-        x <- SqlCommon(xa).delete(deleteAllAuthor)
+        x <- SqlCommon(xa).delete(deleteAllAuthor.update.run)
         response <- if(x > 0) Ok("All authors was deleted") else Ok("Error")
       } yield response
 

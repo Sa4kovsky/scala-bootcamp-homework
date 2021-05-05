@@ -1,4 +1,6 @@
+import doobie.util.Read
 import io.circe.generic.auto._
+
 import java.time.{LocalDate, Year}
 import java.util.UUID
 

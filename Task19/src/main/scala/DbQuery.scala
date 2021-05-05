@@ -27,33 +27,37 @@ object DbQuery {
 
   val deleteAllBook: Fragment = fr"DELETE FROM books"
 
-  val readAllAuthors = authors
+  val readAllAuthors = authors.query[Author].to[List]
 
-  val readAllBook = books
+  val readAllBook = books.query[Book].to[List]
 
-  def readAuthor(id: UUID)= (authors ++ fr"WHERE id = $id")
+  def readAuthor(id: UUID)= (authors ++ fr"WHERE id = $id").query[Author].to[List]
 
-  def readBook(id: UUID) = (books ++ fr"WHERE id = $id")
+  def readBook(id: UUID) = (books ++ fr"WHERE id = $id").query[Book].to[List]
 
   def insertAuthor(name: String, birthday: LocalDate) = {
     val id = UUID.randomUUID()
     fr"INSERT INTO authors (id, name, birthday) VALUES ($id, $name, $birthday)"
+      .update.run
   }
 
   def insertBook(idAuthor: UUID, title: String, year: Year, genre: String) = {
     val id = UUID.randomUUID()
     fr"INSERT INTO books (id, author, title, year, genre) VALUES ($id, $idAuthor, $title, $year, $genre)"
+      .update.run
   }
 
-  def updateAllAuthor(id: UUID, name: String, birthday: LocalDate) =
+  def updateAllAuthor(id: UUID, name: String, birthday: LocalDate) = {
     (updateAuthor ++ fr"name = $name, birthday = $birthday WHERE id = $id")
+      .update.run
+  }
 
   def updateYearOfBook(id: UUID, year: Year) =
-    (updateAuthor ++ fr"year = $year where id = $id")
+    (updateAuthor ++ fr"year = $year where id = $id").update.run
 
   def deleteBook(id: UUID) =
-    (deleteAllBook ++ fr"WHERE id = $id")
+    (deleteAllBook ++ fr"WHERE id = $id").update.run
 
   def filterBookOfGenre(genre: String) =
-    (authors ++ fr"INNER JOIN authors ON books.author = authors.id WHERE genre  = $genre")
+    (authors ++ fr"INNER JOIN authors ON books.author = authors.id WHERE genre  = $genre").query[BookWithAuthor].to[List]
 }
